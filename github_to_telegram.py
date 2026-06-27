@@ -7,28 +7,33 @@ import hashlib
 import urllib.parse
 import requests
 
-# دریافت اطلاعات تلگرام از سکرت‌های تفکیک شده
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHANNEL_V2RAY_ID = os.environ.get("TELEGRAM_CHANNEL_V2RAY_ID")
 TELEGRAM_CHANNEL_PROXY_ID = os.environ.get("TELEGRAM_CHANNEL_PROXY_ID")
 
-# تنظیمات فیلتر سلامت (به دلیل محدودیت‌های گیت‌هاب این بخش غیرفعال شده تا کانفیگ‌ها ارسال شوند)
-ENABLE_PORT_HEALTH_CHECK = False 
-
-# --- ۱۰ منبع اختصاصی و جدید شما ---
-# --- ۱۰ منبع اختصاصی شما با ساختار صحیح و بدون ارور 404 ---
 GITHUB_SOURCES = [
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no1.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no2.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no3.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no4.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no5.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no6.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no7.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no8.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no9.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no10.txt"
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no1.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no1.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no2.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no2.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no3.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no3.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no4.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no4.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no5.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no5.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no6.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no6.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no7.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no7.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no8.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no8.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no9.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no9.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no10.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no10.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no1.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no1.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no2.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no2.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no3.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no3.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no4.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no4.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no5.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no5.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no6.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no6.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no7.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no7.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no8.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no8.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no9.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no9.txt)",
+    "[https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no10.txt](https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no10.txt)"
 ]
+
 HISTORY_FILE = "sent_configs_history.json"
 
 def load_history():
@@ -45,15 +50,15 @@ def save_history(sent_hashes):
         with open(HISTORY_FILE, 'w', encoding='utf-8') as f:
             json.dump(list(sent_hashes), f, indent=4)
     except Exception as e:
-        print(f"خطا در ذخیره فایل تاریخچه: {e}")
+        print(f"Error saving history: {e}")
 
-def get_config_identity(config_text):
-    """استخراج هوشمند آدرس سرور و پورت کانفیگ برای فیلتر تکراری‌ها"""
+def get_config_identity(config_type, config_text):
     try:
-        parsed = urllib.parse.urlparse(config_text)
-        if parsed.netloc:
-            netloc = parsed.netloc.split('@')[-1]
-            return hashlib.md5(netloc.encode('utf-8')).hexdigest()
+        if config_type == 'v2ray':
+            parsed = urllib.parse.urlparse(config_text)
+            if parsed.netloc:
+                netloc = parsed.netloc.split('@')[-1]
+                return hashlib.md5(netloc.encode('utf-8')).hexdigest()
     except Exception:
         pass
     return hashlib.md5(config_text.strip().encode('utf-8')).hexdigest()
@@ -74,7 +79,7 @@ def fetch_configs():
 
     for url in GITHUB_SOURCES:
         try:
-            print(f"در حال دریافت کانفیگ‌ها از منبع: {url}")
+            print(f"Fetching from source: {url}")
             response = requests.get(url, timeout=15)
             if response.status_code == 200:
                 content = response.text
@@ -83,19 +88,18 @@ def fetch_configs():
                     if decoded != content:
                         content = decoded
                 
-                # پیدا کردن تمام کانفیگ‌ها
                 for match in v2ray_pattern.finditer(content):
                     extracted_configs.append(('v2ray', match.group(0)))
-                # پیدا کردن تمام پروکسی‌ها
                 for match in tg_proxy_pattern.finditer(content):
                     extracted_configs.append(('proxy', match.group(0)))
+            else:
+                print(f"Source error code: {response.status_code}")
         except Exception as e:
-            print(f"خطا در دریافت اطلاعات از {url}: {e}")
+            print(f"Error fetching {url}: {e}")
             
     return extracted_configs
 
 def clean_v2ray_remarks(config):
-    """تغییر نام کانفیگ و شخصی‌سازی آن با آیدی کانال V2Ray شما"""
     try:
         if '#' in config:
             base_part, remark = config.split('#', 1)
@@ -109,12 +113,11 @@ def clean_v2ray_remarks(config):
     return config
 
 def send_to_telegram(config_type, config_text):
-    """ارسال تفکیک‌شده کانفیگ و پروکسی به کانال‌های مربوطه"""
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    url = f"[https://api.telegram.org/bot](https://api.telegram.org/bot){TELEGRAM_BOT_TOKEN}/sendMessage"
     
     if config_type == 'v2ray':
         if not TELEGRAM_CHANNEL_V2RAY_ID:
-            print("خطا: آیدی کانال V2Ray در تنظیمات امنیتی (Secrets) تعریف نشده است.")
+            print("Error: TELEGRAM_CHANNEL_V2RAY_ID is missing.")
             return False
         target_chat = TELEGRAM_CHANNEL_V2RAY_ID
         formatted_config = clean_v2ray_remarks(config_text)
@@ -126,7 +129,7 @@ def send_to_telegram(config_type, config_text):
         )
     else:
         if not TELEGRAM_CHANNEL_PROXY_ID:
-            print("خطا: آیدی کانال پروکسی در تنظیمات امنیتی (Secrets) تعریف نشده است.")
+            print("Error: TELEGRAM_CHANNEL_PROXY_ID is missing.")
             return False
         target_chat = TELEGRAM_CHANNEL_PROXY_ID
         message = (
@@ -145,117 +148,51 @@ def send_to_telegram(config_type, config_text):
         for attempt in range(5):
             response = requests.post(url, json=payload, timeout=10)
             if response.status_code == 200:
-                print(f"پیام با موفقیت به کانال {target_chat} ارسال شد.")
+                print(f"Successfully sent to {target_chat}")
                 return True
             elif response.status_code == 429:
                 retry_after = response.json().get("parameters", {}).get("retry_after", 5)
-                print(f"محدودیت تلگرام! صبر به مدت {retry_after} ثانیه...")
                 time.sleep(retry_after)
             else:
-                print(f"خطای تلگرام با کد {response.status_code}: {response.text}")
+                print(f"Telegram error {response.status_code}")
                 time.sleep(2 ** attempt)
     except Exception as e:
-        print(f"خطا در ارتباط با تلگرام: {e}")
+        print(f"Connection error: {e}")
     return False
 
 def main():
-    print("شروع کار ربات تفکیک‌کننده هوشمند کانال‌ها...")
-    
-    # بررسی صحت وجود توکن تلگرام
+    print("Starting Multi-Channel Config Forwarder...")
     if not TELEGRAM_BOT_TOKEN:
-        print("خطا: توکن ربات تلگرام (TELEGRAM_BOT_TOKEN) در بخش Secrets تعریف نشده است یا خالی است!")
+        print("Error: TELEGRAM_BOT_TOKEN is missing in Secrets!")
         return
 
     sent_hashes = load_history()
     configs = fetch_configs()
-    print(f"در مجموع {len(configs)} کانفیگ و پروکسی در صفحات گیت‌هاب یافت شد.")
+    print(f"Total found in sources: {len(configs)}")
     
     new_items_count = 0
     updated_hashes = set(sent_hashes)
     
     for config_type, config_text in configs:
-        item_hash = get_config_identity(config_text)
+        item_hash = get_config_identity(config_type, config_text)
         
         if item_hash not in sent_hashes:
-            print(f"ارسال مورد جدید به تلگرام ({config_type})...")
+            print(f"Sending new item ({config_type})...")
             success = send_to_telegram(config_type, config_text)
             if success:
                 updated_hashes.add(item_hash)
                 new_items_count += 1
-                time.sleep(3) # مکث برای عدم دریافت ارور اسپم از تلگرام
+                time.sleep(3)
         
     if new_items_count > 0:
         save_history(updated_hashes)
-        print(f"اجرا موفقیت‌آمیز بود. {new_items_count} پیام جدید تفکیک و ارسال شد.")
+        print(f"Success! {new_items_count} new messages forwarded.")
     else:
-        print("هیچ مورد جدیدی برای ارسال پیدا نشد (همه موارد از قبل ارسال شده بودند).")
+        print("No new items found to forward.")
 
 if __name__ == "__main__":
-    main()        except Exception:
-            return set()
-    return set()
-
-def save_history(sent_hashes):
-    try:
-        with open(HISTORY_FILE, 'w', encoding='utf-8') as f:
-            json.dump(list(sent_hashes), f, indent=4)
-    except Exception as e:
-        print(f"خطا در ذخیره فایل تاریخچه: {e}")
-
-def get_config_identity(config_text):
-    """استخراج هوشمند آدرس سرور و پورت کانفیگ برای فیلتر تکراری‌ها"""
-    try:
-        parsed = urllib.parse.urlparse(config_text)
-        if parsed.netloc:
-            netloc = parsed.netloc.split('@')[-1]
-            return hashlib.md5(netloc.encode('utf-8')).hexdigest()
-    except Exception:
-        pass
-    return hashlib.md5(config_text.strip().encode('utf-8')).hexdigest()
-
-def is_server_alive(host, port, timeout=3):
-    """تست خراب یا سالم بودن سرور کانفیگ"""
-    try:
-        ip = socket.gethostbyname(host)
-        with socket.create_connection((ip, port), timeout=timeout):
-            return True
-    except Exception:
-        return False
-
-def check_config_health(config_text):
-    """بررسی سلامت کانفیگ قبل از ارسال"""
-    try:
-        parsed = urllib.parse.urlparse(config_text)
-        netloc = parsed.netloc.split('@')[-1]
-        if ':' in netloc:
-            host, port_str = netloc.split(':', 1)
-            port_str = port_str.split('?')[0].split('#')[0]
-            port = int(port_str)
-            return is_server_alive(host, port)
-    except Exception:
-        pass
-    return True
-
-def decode_base64(data):
-    try:
-        missing_padding = len(data) % 4
-        if missing_padding:
-            data += '=' * (4 - missing_padding)
-        return base64.b64decode(data).decode('utf-8')
-    except Exception:
-        return data
-
-def fetch_configs():
-    extracted_configs = []
-    v2ray_pattern = re.compile(r'(vless|vmess|trojan|ss|tuic|hysteria2?):\/\/[^\s#]+(?:#[^\s]*)?', re.IGNORECASE)
-    tg_proxy_pattern = re.compile(r'(?:tg:\/\/proxy\?|https:\/\/t\.me\/proxy\?)[^\s]+', re.IGNORECASE)
-
-    for url in GITHUB_SOURCES:
-        try:
-            response = requests.get(url, timeout=15)
-            if response.status_code == 200:
-                content = response.text
-                if not content.startswith(("vless://", "vmess://", "ss://", "trojan://", "tg://")):
+    main()
+ess://", "ss://", "trojan://", "tg://")):
                     decoded = decode_base64(content)
                     if decoded != content:
                         content = decoded
