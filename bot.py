@@ -11,7 +11,9 @@ TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHANNEL_V2RAY_ID = os.environ.get("TELEGRAM_CHANNEL_V2RAY_ID")
 TELEGRAM_CHANNEL_PROXY_ID = os.environ.get("TELEGRAM_CHANNEL_PROXY_ID")
 
+# --- لیست یکپارچه ۲۰ منبع اختصاصی شما ---
 GITHUB_SOURCES = [
+    # --- ۱۰ منبع کانفیگ V2Ray ---
     "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no1.txt",
     "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no2.txt",
     "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no3.txt",
@@ -22,6 +24,8 @@ GITHUB_SOURCES = [
     "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no8.txt",
     "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no9.txt",
     "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no10.txt",
+
+    # --- ۱۰ منبع پروکسی تلگرام ---
     "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no1.txt",
     "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no2.txt",
     "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no3.txt",
@@ -82,7 +86,9 @@ def fetch_configs():
             response = requests.get(url, timeout=15)
             if response.status_code == 200:
                 content = response.text
-                if not content.startswith(("vless://", "vmess://", "ss://", "trojan://", "tg://")):
+                
+                # حل مشکل تشخیص اشتباه متن‌های ساده پروکسی به عنوان بیس۶۴
+                if "://" not in content.strip()[:100]:
                     decoded = decode_base64(content)
                     if decoded != content:
                         content = decoded
@@ -112,6 +118,7 @@ def clean_v2ray_remarks(config):
 def send_to_telegram(config_type, config_text):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     
+    # استفاده از HTML مچ آندرلاین‌های ایدی کانال‌ها را باز می‌کند
     if config_type == 'v2ray':
         if not TELEGRAM_CHANNEL_V2RAY_ID:
             return False
@@ -119,8 +126,8 @@ def send_to_telegram(config_type, config_text):
         formatted_config = clean_v2ray_remarks(config_text)
         protocol = formatted_config.split('://')[0].upper()
         message = (
-            f"⚡️ **کانفیگ جدید {protocol}**\n\n"
-            f"`{formatted_config}`\n\n"
+            f"⚡️ <b>کانفیگ جدید {protocol}</b>\n\n"
+            f"<code>{formatted_config}</code>\n\n"
             f"👤 عضویت در کانال ما: {TELEGRAM_CHANNEL_V2RAY_ID}"
         )
     else:
@@ -128,15 +135,15 @@ def send_to_telegram(config_type, config_text):
             return False
         target_chat = TELEGRAM_CHANNEL_PROXY_ID
         message = (
-            f"⚡️ **پروکسی جدید تلگرام**\n\n"
-            f"🔗 [برای اتصال سریع کلیک کنید]({config_text})\n\n"
+            f"⚡️ <b>پروکسی جدید تلگرام</b>\n\n"
+            f'🔗 <a href="{config_text}">برای اتصال سریع کلیک کنید</a>\n\n"
             f"👤 عضویت در کانال پروکسی ما: {TELEGRAM_CHANNEL_PROXY_ID}"
         )
 
     payload = {
         "chat_id": target_chat,
         "text": message,
-        "parse_mode": "Markdown"
+        "parse_mode": "HTML"
     }
 
     try:
@@ -178,3 +185,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+        
