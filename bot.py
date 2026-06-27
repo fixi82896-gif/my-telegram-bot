@@ -79,26 +79,33 @@ def decode_base64(data):
 def fetch_configs():
     extracted_configs = []
     v2ray_pattern = re.compile(r'(vless|vmess|trojan|ss|tuic|hysteria2?):\/\/[^\s#]+(?:#[^\s]*)?', re.IGNORECASE)
-    tg_proxy_pattern = re.compile(r'(?:tg:\/\/proxy\?|https:\/\/t\.me\/proxy\?)[^\s]+', re.IGNORECASE)
+    tg_proxy_pattern = re.compile(r'(?:tg:\/\/proxy\?|https:\/\/t\.me\/proxy\?|tg:\/\/socks\?|https:\/\/t\.me\/socks\?)[^\s]+', re.IGNORECASE)
 
     for url in GITHUB_SOURCES:
         try:
+            print(f"🔗 در حال بررسی منبع: {url}")
             response = requests.get(url, timeout=15)
             if response.status_code == 200:
                 content = response.text
                 
-                # حل مشکل تشخیص اشتباه متن‌های ساده پروکسی به عنوان بیس۶۴
                 if "://" not in content.strip()[:100]:
                     decoded = decode_base64(content)
                     if decoded != content:
                         content = decoded
                 
+                v2ray_count = 0
+                proxy_count = 0
+                
                 for match in v2ray_pattern.finditer(content):
                     extracted_configs.append(('v2ray', match.group(0)))
+                    v2ray_count += 1
                 for match in tg_proxy_pattern.finditer(content):
                     extracted_configs.append(('proxy', match.group(0)))
-        except Exception:
-            pass
+                    proxy_count += 1
+                    
+                print(f"📊 یافته‌ها -> کانفیگ: {v2ray_count} | پروکسی: {proxy_count}")
+        except Exception as e:
+            print(f"❌ خطا در دریافت از منبع: {e}")
             
     return extracted_configs
 
@@ -108,7 +115,7 @@ def clean_v2ray_remarks(config):
             base_part, remark = config.split('#', 1)
             decoded_remark = urllib.parse.unquote(remark)
             clean_remark = re.sub(r'@[a-zA-Z0-9_]+', '', decoded_remark).strip()
-            new_remark = f"{clean_remark} | {TELEGRAM_CHANNEL_V2RAY_ID}"
+            new_remark = f"⚡ {clean_remark}"
             encoded_remark = urllib.parse.quote(new_remark)
             return f"{base_part}#{encoded_remark}"
     except Exception:
@@ -118,26 +125,31 @@ def clean_v2ray_remarks(config):
 def send_to_telegram(config_type, config_text):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     
-    # استفاده از HTML مچ آندرلاین‌های ایدی کانال‌ها را باز می‌کند
     if config_type == 'v2ray':
         if not TELEGRAM_CHANNEL_V2RAY_ID:
+            print("⚠️ خطا: آیدی کانال V2Ray تنظیم نشده است.")
             return False
         target_chat = TELEGRAM_CHANNEL_V2RAY_ID
         formatted_config = clean_v2ray_remarks(config_text)
         protocol = formatted_config.split('://')[0].upper()
+        
+        # تعبیر نو و دیزاین شیک کانفیگ بدون متن تبلیغاتی فرعی
         message = (
-            f"⚡️ <b>کانفیگ جدید {protocol}</b>\n\n"
-            f"<code>{formatted_config}</code>\n\n"
-            f"👤 عضویت در کانال ما: {TELEGRAM_CHANNEL_V2RAY_ID}"
+            f"🚀 <b>بروزرسانی سرور [{protocol}]</b>\n"
+            f"📶 اتصال پایدار • ظرفیت پرسرعت\n\n"
+            f"<code>{formatted_config}</code>"
         )
     else:
         if not TELEGRAM_CHANNEL_PROXY_ID:
+            print("⚠️ خطا: آیدی کانال پروکسی تنظیم نشده است.")
             return False
         target_chat = TELEGRAM_CHANNEL_PROXY_ID
+        
+        # دیزاین شیک و تمیز پروکسی بدون متن تبلیغاتی فرعی
         message = (
-            f"⚡️ <b>پروکسی جدید تلگرام</b>\n\n"
-            f'🔗 <a href="{config_text}">برای اتصال سریع کلیک کنید</a>\n\n"
-            f"👤 عضویت در کانال پروکسی ما: {TELEGRAM_CHANNEL_PROXY_ID}"
+            f"⚡️ <b>پروکسی اختصاصی و جدید تلگرام</b>\n"
+            f"🟢 وضعیت: فعال و پرسرعت\n\n"
+            f'🔗 <a href="{config_text}"><b>[ برای اتصال فوری کلیک کنید ]</b></a>'
         )
 
     payload = {
@@ -155,17 +167,21 @@ def send_to_telegram(config_type, config_text):
                 retry_after = response.json().get("parameters", {}).get("retry_after", 5)
                 time.sleep(retry_after)
             else:
+                print(f"❌ خطای ارسال تلگرام: {response.status_code}")
                 time.sleep(2 ** attempt)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"❌ خطای ارتباطی تلگرام: {e}")
     return False
 
 def main():
+    print("🚀 شروع کار ربات تفکیک‌کننده هوشمند...")
     if not TELEGRAM_BOT_TOKEN:
+        print("❌ خطا: TELEGRAM_BOT_TOKEN یافت نشد.")
         return
 
     sent_hashes = load_history()
     configs = fetch_configs()
+    print(f"📦 مجموع کل کلیدهای یافت‌شده در این پارت: {len(configs)}")
     
     new_items_count = 0
     updated_hashes = set(sent_hashes)
@@ -174,6 +190,7 @@ def main():
         item_hash = get_config_identity(config_type, config_text)
         
         if item_hash not in sent_hashes:
+            print(f" Forwarding new {config_type}...")
             success = send_to_telegram(config_type, config_text)
             if success:
                 updated_hashes.add(item_hash)
@@ -182,7 +199,10 @@ def main():
         
     if new_items_count > 0:
         save_history(updated_hashes)
+        print(f"✅ با موفقیت {new_items_count} مورد جدید ارسال شد.")
+    else:
+        print("ℹ️ مورد جدیدی برای ارسال پیدا نشد.")
 
 if __name__ == "__main__":
     main()
-        
+    
