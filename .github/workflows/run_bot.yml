@@ -31,7 +31,7 @@ jobs:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHANNEL_V2RAY_ID: ${{ secrets.TELEGRAM_CHANNEL_V2RAY_ID }}
         TELEGRAM_CHANNEL_PROXY_ID: ${{ secrets.TELEGRAM_CHANNEL_PROXY_ID }}
-      run: python github_to_telegram.py
+      run: python bot.py
 
     - name: Commit and Push History Changes
       run: |
