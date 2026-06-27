@@ -2,7 +2,7 @@ name: Auto Config & Proxy Forwarder
 
 on:
   schedule:
-    # تنظیم شده برای اجرای خودکار راس هر ۳۰ دقیقه
+    # تنظیم شده برای اجرای خودکار راس هر ۱۵ دقیقه
     - cron: '*/15 * * * *'
   workflow_dispatch: # امکان اجرای دستی
 
