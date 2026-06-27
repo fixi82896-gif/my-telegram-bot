@@ -7,39 +7,99 @@ import hashlib
 import urllib.parse
 import requests
 
-TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHANNEL_V2RAY_ID = os.environ.get("TELEGRAM_CHANNEL_V2RAY_ID")
-TELEGRAM_CHANNEL_PROXY_ID = os.environ.get("TELEGRAM_CHANNEL_PROXY_ID")
+BOT_TOKEN = os.environ.get(
+    "TELEGRAM_BOT_TOKEN"
+)
+V2RAY_ID = os.environ.get(
+    "TELEGRAM_CHANNEL_V2RAY_ID"
+)
+PROXY_ID = os.environ.get(
+    "TELEGRAM_CHANNEL_PROXY_ID"
+)
 
-GITHUB_SOURCES = [
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no1.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no2.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no3.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no4.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no5.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no6.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no7.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no8.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no9.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/V2RAY_SUB/main/v2ray_configs_no10.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no1.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no2.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no3.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no4.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no5.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no6.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no7.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no8.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no9.txt",
-    "https://raw.githubusercontent.com/V2RAYCONFIGSPOOL/TELEGRAM_PROXY_SUB/main/telegram_proxy_no10.txt"
+# منابع خرد شده به خطوط کوچک برای جلوگیری از باگ موبایل
+SRC = [
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/V2RAY_SUB/main/"
+    "v2ray_configs_no1.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/V2RAY_SUB/main/"
+    "v2ray_configs_no2.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/V2RAY_SUB/main/"
+    "v2ray_configs_no3.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/V2RAY_SUB/main/"
+    "v2ray_configs_no4.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/V2RAY_SUB/main/"
+    "v2ray_configs_no5.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/V2RAY_SUB/main/"
+    "v2ray_configs_no6.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/V2RAY_SUB/main/"
+    "v2ray_configs_no7.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/V2RAY_SUB/main/"
+    "v2ray_configs_no8.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/V2RAY_SUB/main/"
+    "v2ray_configs_no9.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/V2RAY_SUB/main/"
+    "v2ray_configs_no10.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/"
+    "TELEGRAM_PROXY_SUB/main/"
+    "telegram_proxy_no1.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/"
+    "TELEGRAM_PROXY_SUB/main/"
+    "telegram_proxy_no2.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/"
+    "TELEGRAM_PROXY_SUB/main/"
+    "telegram_proxy_no3.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/"
+    "TELEGRAM_PROXY_SUB/main/"
+    "telegram_proxy_no4.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/"
+    "TELEGRAM_PROXY_SUB/main/"
+    "telegram_proxy_no5.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/"
+    "TELEGRAM_PROXY_SUB/main/"
+    "telegram_proxy_no6.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/"
+    "TELEGRAM_PROXY_SUB/main/"
+    "telegram_proxy_no7.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/"
+    "TELEGRAM_PROXY_SUB/main/"
+    "telegram_proxy_no8.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/"
+    "TELEGRAM_PROXY_SUB/main/"
+    "telegram_proxy_no9.txt",
+    "https://raw.githubusercontent.com/"
+    "V2RAYCONFIGSPOOL/"
+    "TELEGRAM_PROXY_SUB/main/"
+    "telegram_proxy_no10.txt"
 ]
 
-HISTORY_FILE = "sent_configs_history.json"
+H_FILE = "sent_configs_history.json"
 
 def load_history():
-    if os.path.exists(HISTORY_FILE):
+    if os.path.exists(H_FILE):
         try:
-            with open(HISTORY_FILE, 'r', encoding='utf-8') as f:
+            with open(
+                H_FILE, 'r',
+                encoding='utf-8'
+            ) as f:
                 return set(json.load(f))
         except Exception:
             return set()
@@ -47,134 +107,201 @@ def load_history():
 
 def save_history(sent_hashes):
     try:
-        with open(HISTORY_FILE, 'w', encoding='utf-8') as f:
-            json.dump(list(sent_hashes), f, indent=4)
+        with open(
+            H_FILE, 'w',
+            encoding='utf-8'
+        ) as f:
+            json.dump(
+                list(sent_hashes),
+                f, indent=4
+            )
     except Exception:
         pass
 
-def get_config_identity(config_type, config_text):
+def get_config_identity(ctype, ctext):
     try:
-        if config_type == 'v2ray':
-            parsed = urllib.parse.urlparse(config_text)
+        if ctype == 'v2ray':
+            parsed = urllib.parse.urlparse(
+                ctext
+            )
             if parsed.netloc:
-                netloc = parsed.netloc.split('@')[-1]
-                return hashlib.md5(netloc.encode('utf-8')).hexdigest()
+                netloc = parsed.netloc.split(
+                    '@'
+                )[-1]
+                return hashlib.md5(
+                    netloc.encode('utf-8')
+                ).hexdigest()
     except Exception:
         pass
-    return hashlib.md5(config_text.strip().encode('utf-8')).hexdigest()
+    return hashlib.md5(
+        ctext.strip().encode('utf-8')
+    ).hexdigest()
 
 def decode_base64(data):
     try:
-        missing_padding = len(data) % 4
-        if missing_padding:
-            data += '=' * (4 - missing_padding)
-        return base64.b64decode(data).decode('utf-8')
+        missing = len(data) % 4
+        if missing:
+            data += '=' * (4 - missing)
+        return base64.b64decode(
+            data
+        ).decode('utf-8')
     except Exception:
         return data
 
 def fetch_configs():
-    extracted_configs = []
-    v2ray_pattern = re.compile(r'(vless|vmess|trojan|ss|tuic|hysteria2?):\/\/[^\s#]+(?:#[^\s]*)?', re.IGNORECASE)
-    tg_proxy_pattern = re.compile(r'(?:tg:\/\/proxy\?|https:\/\/t\.me\/proxy\?)[^\s]+', re.IGNORECASE)
+    extracted = []
+    v2ray_p = re.compile(
+        r'(vless|vmess|trojan|ss|'
+        r'tuic|hysteria2?):\/\/'
+        r'[^\s#]+(?:#[^\s]*)?',
+        re.IGNORECASE
+    )
+    proxy_p = re.compile(
+        r'(?:tg:\/\/proxy\?|'
+        r'https:\/\/t\.me\/proxy\?)'
+        r'[^\s]+',
+        re.IGNORECASE
+    )
 
-    for url in GITHUB_SOURCES:
+    for url in SRC:
         try:
-            response = requests.get(url, timeout=15)
-            if response.status_code == 200:
-                content = response.text
-                if not content.startswith(("vless://", "vmess://", "ss://", "trojan://", "tg://")):
-                    decoded = decode_base64(content)
-                    if decoded != content:
-                        content = decoded
+            res = requests.get(
+                url, timeout=15
+            )
+            if res.status_code == 200:
+                content = res.text
+                pfx = (
+                    "vless://", "vmess://",
+                    "ss://", "trojan://",
+                    "tg://"
+                )
+                if not content.startswith(
+                    pfx
+                ):
+                    dec = decode_base64(
+                        content
+                    )
+                    if dec != content:
+                        content = dec
                 
-                for match in v2ray_pattern.finditer(content):
-                    extracted_configs.append(('v2ray', match.group(0)))
-                for match in tg_proxy_pattern.finditer(content):
-                    extracted_configs.append(('proxy', match.group(0)))
+                for m in v2ray_p.finditer(
+                    content
+                ):
+                    extracted.append(
+                        ('v2ray', m.group(0))
+                    )
+                for m in proxy_p.finditer(
+                    content
+                ):
+                    extracted.append(
+                        ('proxy', m.group(0))
+                    )
         except Exception:
             pass
             
-    return extracted_configs
+    return extracted
 
 def clean_v2ray_remarks(config):
     try:
         if '#' in config:
-            base_part, remark = config.split('#', 1)
-            decoded_remark = urllib.parse.unquote(remark)
-            clean_remark = re.sub(r'@[a-zA-Z0-9_]+', '', decoded_remark).strip()
-            new_remark = f"{clean_remark} | {TELEGRAM_CHANNEL_V2RAY_ID}"
-            encoded_remark = urllib.parse.quote(new_remark)
-            return f"{base_part}#{encoded_remark}"
+            base, rem = config.split(
+                '#', 1
+            )
+            dec_rem = urllib.parse.unquote(
+                rem
+            )
+            clean = re.sub(
+                r'@[a-zA-Z0-9_]+',
+                '', dec_rem
+            ).strip()
+            new_rem = (
+                f"{clean} | {V2RAY_ID}"
+            )
+            enc_rem = urllib.parse.quote(
+                new_rem
+            )
+            return f"{base}#{enc_rem}"
     except Exception:
         pass
     return config
 
-def send_to_telegram(config_type, config_text):
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+def send_to_telegram(ctype, ctext):
+    url = (
+        f"https://api.telegram.org/"
+        f"bot{BOT_TOKEN}/sendMessage"
+    )
     
-    if config_type == 'v2ray':
-        if not TELEGRAM_CHANNEL_V2RAY_ID:
+    if ctype == 'v2ray':
+        if not V2RAY_ID:
             return False
-        target_chat = TELEGRAM_CHANNEL_V2RAY_ID
-        formatted_config = clean_v2ray_remarks(config_text)
-        protocol = formatted_config.split('://')[0].upper()
-        message = (
-            f"⚡️ **کانفیگ جدید {protocol}**\n\n"
-            f"`{formatted_config}`\n\n"
-            f"👤 عضویت در کانال ما: {TELEGRAM_CHANNEL_V2RAY_ID}"
+        chat = V2RAY_ID
+        fmt = clean_v2ray_remarks(ctext)
+        proto = fmt.split('://')[0].upper()
+        msg = (
+            f"⚡️ **کانفیگ جدید {proto}**\n\n"
+            f"`{fmt}`\n\n"
+            f"👤 عضویت ما: {V2RAY_ID}"
         )
     else:
-        if not TELEGRAM_CHANNEL_PROXY_ID:
+        if not PROXY_ID:
             return False
-        target_chat = TELEGRAM_CHANNEL_PROXY_ID
-        message = (
+        chat = PROXY_ID
+        msg = (
             f"⚡️ **پروکسی جدید تلگرام**\n\n"
-            f"🔗 [برای اتصال سریع کلیک کنید]({config_text})\n\n"
-            f"👤 عضویت در کانال پروکسی ما: {TELEGRAM_CHANNEL_PROXY_ID}"
+            f"🔗 [اتصال سریع]({ctext})\n\n"
+            f"👤 عضویت ما: {PROXY_ID}"
         )
 
     payload = {
-        "chat_id": target_chat,
-        "text": message,
+        "chat_id": chat,
+        "text": msg,
         "parse_mode": "Markdown"
     }
 
     try:
-        for attempt in range(5):
-            response = requests.post(url, json=payload, timeout=10)
-            if response.status_code == 200:
+        for att in range(5):
+            res = requests.post(
+                url, json=payload,
+                timeout=10
+            )
+            if res.status_code == 200:
                 return True
-            elif response.status_code == 429:
-                retry_after = response.json().get("parameters", {}).get("retry_after", 5)
-                time.sleep(retry_after)
+            elif res.status_code == 429:
+                ret = res.json().get(
+                    "parameters", {}
+                ).get("retry_after", 5)
+                time.sleep(ret)
             else:
-                time.sleep(2 ** attempt)
+                time.sleep(2 ** att)
     except Exception:
         pass
     return False
 
 def main():
-    if not TELEGRAM_BOT_TOKEN:
+    if not BOT_TOKEN:
         return
 
     sent_hashes = load_history()
     configs = fetch_configs()
     
-    new_items_count = 0
     updated_hashes = set(sent_hashes)
     
-    for config_type, config_text in configs:
-        item_hash = get_config_identity(config_type, config_text)
+    for ctype, ctext in configs:
+        ihash = get_config_identity(
+            ctype, ctext
+        )
         
-        if item_hash not in sent_hashes:
-            success = send_to_telegram(config_type, config_text)
+        if ihash not in sent_hashes:
+            success = send_to_telegram(
+                ctype, ctext
+            )
             if success:
-                updated_hashes.add(item_hash)
-                new_items_count += 1
+                updated_hashes.add(ihash)
                 time.sleep(3)
         
-    if new_items_count > 0:
+    if len(updated_hashes) > len(sent_hashes):
         save_history(updated_hashes)
 
 if __name__ == "__main__":
     main()
+    
