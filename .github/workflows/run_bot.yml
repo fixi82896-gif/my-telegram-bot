@@ -1,23 +1,23 @@
-name: Auto Config Forwarder
+name: Auto Config & Proxy Forwarder
 
 on:
   schedule:
-    # تنظیم شده برای اجرای خودکار و هوشمند هر ۱ ساعت یکبار
-    - cron: '0 */1 * * *'
-  workflow_dispatch: # امکان اجرای دستی در هر زمان از بخش Actions گیت‌هاب
+    # تنظیم شده برای اجرای خودکار راس هر ۳۰ دقیقه
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # امکان اجرای دستی
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # اجازه به گیت‌هاب برای ذخیره فایل تاریخچه تکراری‌ها در ریپازیتوری شما
+      contents: write
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4 # ارتقا به نسخه ۴ برای رفع کامل اخطار Node.js
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v5 # ارتقا به نسخه ۵ برای رفع کامل اخطار Node.js
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -29,11 +29,17 @@ jobs:
     - name: Run Script
       env:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+        TELEGRAM_CHANNEL_V2RAY_ID: ${{ secrets.TELEGRAM_CHANNEL_V2RAY_ID }}
+        TELEGRAM_CHANNEL_PROXY_ID: ${{ secrets.TELEGRAM_CHANNEL_PROXY_ID }}
       run: python github_to_telegram.py
 
     - name: Commit and Push History Changes
       run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add sent_configs_history.json || true
+        git commit -m "Update sent configs history [skip ci]" || true
+        git push || true
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add sent_configs_history.json || true
